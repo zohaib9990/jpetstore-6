@@ -8,7 +8,7 @@
       apt:
         update_cache: yes   
 
-    - name: Build Docker Image
+    # - name: Build Docker Image
       # command: docker build -t petstore .
       args:
         chdir: /var/lib/jenkins/workspace/petstore
