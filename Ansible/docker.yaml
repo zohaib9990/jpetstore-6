@@ -6,15 +6,15 @@
   tasks:
     - name: Update apt package cache
       apt:
-        update_cache: yes
+        update_cache: yes   
 
-    - name: Build Docker image
+    - name: Build Docker Image
       command: docker build -t petstore .
       args:
         chdir: /var/lib/jenkins/workspace/petstore
 
     - name: Tag Docker image
-      command: docker tag petstore:latest rizwanshaukat/petstore:latest
+      command: docker tag petstore:latest rizwanshaukat/petstore:latest 
 
     - name: Log in to Docker Hub
       community.docker.docker_login:
@@ -22,7 +22,7 @@
         username: "{{ lookup('env', 'DOCKER_USERNAME') }}"
         password: "{{ lookup('env', 'DOCKER_PASSWORD') }}"
 
-    - name: Push Docker image to Docker Hub
+    - name: Push Docker image
       command: docker push rizwanshaukat/petstore:latest
 
     - name: Run Docker container
