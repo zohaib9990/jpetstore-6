@@ -2,15 +2,11 @@
 - name: Docker build and push
   hosts: local  # Replace with the hostname or IP address of your target server
   become: yes  # Run tasks with sudo privileges
-  vars:
-    docker_username: "{{ lookup('env', 'DOCKER_USERNAME') }}"
-    docker_password: "{{ lookup('env', 'DOCKER_PASSWORD') }}"
-    repo_name: "rizwanshaukat/petstore"
 
   tasks:
     - name: Update apt package cache
       apt:
-        update_cache: yes
+        update_cache: yes   
 
     - name: Build Docker Image
       command: docker build -t petstore .
@@ -18,28 +14,12 @@
         chdir: /var/lib/jenkins/workspace/petstore
 
     - name: Tag Docker image
-      command: docker tag petstore:latest rizwanshaukat/petstore:latest 
+      command: docker tag petstore rizwanshaukat/petstore:latest 
 
     - name: Log in to Docker Hub
       community.docker.docker_login:
         username: "{{ lookup('env', 'DOCKER_USERNAME') }}"
         password: "{{ lookup('env', 'DOCKER_PASSWORD') }}"
-
-    - name: Create Docker Hub repository
-      uri:
-        url: "https://hub.docker.com/v2/repositories/{{ repo_name }}"
-        method: POST
-        user: "{{ docker_username }}"
-        password: "{{ docker_password }}"
-        body:
-          name: "{{ repo_name.split('/')[-1] }}"
-          is_private: false  # Set to true for private repositories
-        headers:
-          Content-Type: application/json
-        status_code: 201  # Expecting a 201 response on success
-      register: create_repo_response
-      failed_when: create_repo_response.status not in [201, 409]  # Handle conflict if repo already exists
-
 
     - name: Push Docker image
       command: docker push rizwanshaukat/petstore:latest
