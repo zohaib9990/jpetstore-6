@@ -18,7 +18,6 @@
 
     - name: Log in to Docker Hub
       community.docker.docker_login:
-        registry_url: "https://index.docker.io"
         username: "{{ lookup('env', 'DOCKER_USERNAME') }}"
         password: "{{ lookup('env', 'DOCKER_PASSWORD') }}"
 
