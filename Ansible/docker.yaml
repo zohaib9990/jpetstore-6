@@ -27,3 +27,10 @@
 
     - name: Run Docker container
       command: docker run -d --name petstore -p 8081:80 rizwanshaukat/petstore:latest
+      register: run_result
+      ignore_errors: yes
+
+    - name: Log failure if the container failed to start
+      debug:
+        msg: "Failed to run container: {{ run_result.stderr }}"
+      when: run_result.rc != 0
