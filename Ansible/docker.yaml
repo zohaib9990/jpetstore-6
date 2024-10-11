@@ -25,6 +25,11 @@
     - name: Push Docker image
       command: docker push rizwanshaukat/petstore:latest
 
+    - name: Remove existing Docker container
+      docker_container:
+        name: petstore
+        state: absent
+        
     - name: Run Docker container
       command: docker run -d --name petstore -p 8081:8080 rizwanshaukat/petstore:latest
       register: run_result
