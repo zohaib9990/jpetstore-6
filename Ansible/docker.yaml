@@ -18,7 +18,7 @@
 
     - name: Log in to Docker Hub
       community.docker.docker_login:
-        registry_url: "https://index.docker.io"
+        registry_url: "https://hub.docker.com/repository/docker/rizwanshaukat/petstore/"
         username: "{{ lookup('env', 'DOCKER_USERNAME') }}"
         password: "{{ lookup('env', 'DOCKER_PASSWORD') }}"
 
