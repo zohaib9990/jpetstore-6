@@ -17,7 +17,7 @@
       command: docker tag petstore rizwanshaukat/petstore:latest 
 
     - name: Scan Docker image with Trivy
-      command: trivy image petstore > trivyimage.txt
+      command: trivy image rizwanshaukat/petstore:latest > trivyimage.txt
       args:
         chdir: /var/lib/jenkins/workspace/petstore
       register: trivy_scan
