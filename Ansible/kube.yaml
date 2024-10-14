@@ -12,22 +12,22 @@
       become_user: root  # Use a privileged user for copying if required
 
     - name: Check if deployment exists using kubectl
-      shell: kubectl get deployment petshop -o name
+      command: kubectl get deployment petshop -o name
       register: deployment_check
       ignore_errors: yes
 
     - name: Delete existing deployment if it exists
-      shell: kubectl delete deployment petshop
+      command: kubectl delete deployment petshop
       when: deployment_check.rc == 0
       ignore_errors: yes
 
     - name: Check if service exists using kubectl
-      shell: kubectl get service petshop -o name
+      command: kubectl get service petshop -o name
       register: service_check
       ignore_errors: yes
 
     - name: Delete existing service if it exists
-      shell: kubectl delete service petshop
+      command: kubectl delete service petshop
       when: service_check.rc == 0
       ignore_errors: yes
 
