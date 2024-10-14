@@ -11,5 +11,42 @@
       become: yes  # Use sudo for copying if required
       become_user: root  # Use a privileged user for copying if required
 
+    - name: Check if deployment exists
+      k8s_facts:
+        kubeconfig: /home/ubuntu/.kube/config  # Path to the kubeconfig if not on the master node
+        kind: Deployment
+        name: petshop  # Replace with your deployment name
+      register: deployment_check
+      ignore_errors: yes
+
+    - name: Delete existing deployment if it exists
+      k8s:
+        kubeconfig: /home/ubuntu/.kube/config  # Path to the kubeconfig if not on the master node
+        state: absent
+        kind: Deployment
+        name: petshop  # Replace with your deployment name
+      when: deployment_check.resources | length > 0
+      ignore_errors: yes
+
+    - name: Check if service exists
+      k8s_facts:
+        kubeconfig: /home/ubuntu/.kube/config  # Path to the kubeconfig if not on the master node
+        kind: Service
+        name: petshop  # Replace with your service name
+      register: service_check
+      ignore_errors: yes
+
+    - name: Delete existing service if it exists
+      k8s:
+        kubeconfig: /home/ubuntu/.kube/config  # Path to the kubeconfig if not on the master node
+        state: absent
+        kind: Service
+        name: petshop  # Replace with your service name
+      when: service_check.resources | length > 0
+      ignore_errors: yes
+
     - name: Apply Deployment
-      command: kubectl apply -f /home/ubuntu/deployment.yaml
+      k8s:
+        kubeconfig: /home/ubuntu/.kube/config  # Path to the kubeconfig if not on the master node
+        state: present
+        src: /home/ubuntu/deployment.yaml
