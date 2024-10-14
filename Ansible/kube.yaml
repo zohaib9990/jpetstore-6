@@ -11,13 +11,13 @@
       become: yes  # Use sudo for copying if required
       become_user: root  # Use a privileged user for copying if required
 
-    - name: Check if deployment exists
+    - name: Check deployment exists 
       command: kubectl get deployment petshop -o name
       register: deployment_check
       ignore_errors: yes
-
-    - name: Print message if deployment exists
-      debug:
+      failed_when: false
+      changed_when: false
+    - debug:
         msg: "Deployment 'petshop' exists."
       when: deployment_check.rc == 0
 
