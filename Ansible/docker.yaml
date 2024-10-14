@@ -17,11 +17,17 @@
       command: docker tag petstore rizwanshaukat/petstore:latest 
 
     - name: Scan Docker image with Trivy
-      command: trivy image rizwanshaukat/petstore:latest > trivyimage.txt
+      command: trivy image rizwanshaukat/petstore:latest
       args:
         chdir: /var/lib/jenkins/workspace/petstore
       register: trivy_scan
       ignore_errors: yes
+
+    - name: Save Trivy scan output to file
+      copy:
+        content: "{{ trivy_scan.stdout }}"
+        dest: /var/lib/jenkins/workspace/petstore/trivyimage.txt
+      when: trivy_scan.stdout is defined
 
     - name: Log in to Docker Hub
       community.docker.docker_login:
