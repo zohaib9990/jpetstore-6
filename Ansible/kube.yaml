@@ -50,3 +50,4 @@
         kubeconfig: /home/ubuntu/.kube/config  # Adjust path if necessary
         state: present
         src: /home/ubuntu/deployment.yaml
+        namespace: default 
