@@ -4,11 +4,11 @@
   gather_facts: yes  # Gather facts about the target host
 
   tasks:
-    - name: Remove deployment.yaml file before applying deployment
+    - name: Remove existing deployment.yaml file
       command: rm -rf /home/ubuntu/deployment.yaml
       become: yes  # Use sudo if needed for permissions
       become_user: root
-      
+
     - name: Copy deployment.yaml to Kubernetes master
       copy:
         src: /var/lib/jenkins/workspace/petstore/deployment.yaml  # Assuming Jenkins workspace variable
@@ -16,35 +16,37 @@
       become: yes  # Use sudo for copying if required
       become_user: root  # Use a privileged user for copying if required
 
-    - name: Check deployments
-      command: kubectl get deployments -o name
-      register: all_deployments
-      ignore_errors: yes  # Ignore errors if no deployments are found
-      failed_when: false
-      changed_when: false
-    - debug:
-        msg: "Current deployments: {{ all_deployments.stdout_lines }}"
-      when: all_deployments.rc == 0  # Only print if the command was successful
-
-    - name: Delete existing deployment if it exists
-      command: kubectl delete deployment petshop
-      when: all_deployments.rc == 0
-      ignore_errors: yes
-
-    - name: K8s Check Service
+    - name: Check Kubernetes Deployments
       block:
-        - name: Check if service exists
+        - name: Get existing deployments
+          command: kubectl get deployments -o name
+          register: all_deployments
+          ignore_errors: yes  # Ignore errors if no deployments are found
+          failed_when: false
+          changed_when: false
+        - name: Deployments exists
+          debug:
+            msg: "Current deployments: {{ all_deployments.stdout_lines }}"
+          when: all_deployments.rc == 0  # Only print if the command was successful
+        - name: Delete existing deployment 'petshop' if it exists
+          command: kubectl delete deployment petshop
+          when: all_deployments.rc == 0
+          ignore_errors: yes
+
+    - name: Check Kubernetes Services
+      block:
+        - name: Get existing Services 
           command: kubectl get service -o name
           register: service_check
           ignore_errors: yes
-        - name: Print message if service exists
+        - name: Service exists
           debug:
-            msg: "Current Services: {{ service_check.stdout }}"
+            msg: "Current services: {{ service_check.stdout }}"
           when: service_check.rc == 0
-        - name: Delete existing service petshop if it exists
+        - name: Delete existing service 'petshop' if it exists
           command: kubectl delete service petshop
           when: service_check.rc == 0
           ignore_errors: yes
 
-    - name: Apply Deployment
+    - name: Apply the new deployment.yaml
       command: kubectl apply -f /home/ubuntu/deployment.yaml
