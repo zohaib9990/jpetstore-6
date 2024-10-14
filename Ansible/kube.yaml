@@ -12,7 +12,7 @@
       become_user: root  # Use a privileged user for copying if required
 
     - name: Check if deployment exists
-      k8s_facts:
+      k8s_info:
         kubeconfig: /home/ubuntu/.kube/config  # Adjust path if necessary
         kind: Deployment
         name: petshop
@@ -29,7 +29,7 @@
       ignore_errors: yes
 
     - name: Check if service exists
-      k8s_facts:
+      k8s_info:
         kubeconfig: /home/ubuntu/.kube/config  # Adjust path if necessary
         kind: Service
         name: petshop
