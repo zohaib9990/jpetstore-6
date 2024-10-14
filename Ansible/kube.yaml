@@ -4,6 +4,11 @@
   gather_facts: yes  # Gather facts about the target host
 
   tasks:
+    - name: Remove deployment.yaml file before applying deployment
+      command: rm -rf /home/ubuntu/deployment.yaml
+      become: yes  # Use sudo if needed for permissions
+      become_user: root
+      
     - name: Copy deployment.yaml to Kubernetes master
       copy:
         src: /var/lib/jenkins/workspace/petstore/deployment.yaml  # Assuming Jenkins workspace variable
@@ -11,7 +16,7 @@
       become: yes  # Use sudo for copying if required
       become_user: root  # Use a privileged user for copying if required
 
-    - name: Check deployment exists 
+    - name: Check all deployments
       command: kubectl get deployment petshop -o name
       register: deployment_check
       ignore_errors: yes
@@ -20,6 +25,16 @@
     - debug:
         msg: "Deployment 'petshop' exists."
       when: deployment_check.rc == 0
+
+    - name: Check deployments
+      command: kubectl get deployments -o name
+      register: all_deployments
+      ignore_errors: yes  # Ignore errors if no deployments are found
+      failed_when: false
+      changed_when: false
+      debug:
+        msg: "Current deployments: {{ all_deployments.stdout_lines }}"
+      when: all_deployments.rc == 0  # Only print if the command was successful
 
     - name: Delete existing deployment if it exists
       command: kubectl delete deployment petshop
@@ -31,11 +46,6 @@
       register: service_check
       ignore_errors: yes
 
-    - name: Print message if service exists
-      debug:
-        msg: "Service 'petshop' exists."
-      when: service_check.rc == 0
-
     - name: Delete existing service if it exists
       command: kubectl delete service petshop
       when: service_check.rc == 0
@@ -43,8 +53,3 @@
 
     - name: Apply Deployment
       command: kubectl apply -f /home/ubuntu/deployment.yaml
-
-    - name: Remove deployment.yaml file after applying deployment
-      command: rm -rf /home/ubuntu/deployment.yaml
-      become: yes  # Use sudo if needed for permissions
-      become_user: root  # Use a privileged user for file removal if required
