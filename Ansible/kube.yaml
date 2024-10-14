@@ -18,7 +18,7 @@
 
     - name: Check deployments
       command: kubectl get deployments -o name
-      register: deployment_check
+      register: all_deployments
       ignore_errors: yes  # Ignore errors if no deployments are found
       failed_when: false
       changed_when: false
@@ -31,15 +31,20 @@
       when: deployment_check.rc == 0
       ignore_errors: yes
 
-    - name: Check if service exists
-      command: kubectl get service petshop -o name
-      register: service_check
-      ignore_errors: yes
-
-    - name: Delete existing service if it exists
-      command: kubectl delete service petshop
-      when: service_check.rc == 0
-      ignore_errors: yes
+    - name: K8s Check Service
+      block:
+        - name: Check if service exists
+          command: kubectl get service -o name
+          register: service_check
+          ignore_errors: yes
+        - name: Print message if service exists
+          debug:
+            msg: "Current Services: {{ service_check.stdout }}"
+          when: service_check.rc == 0
+        - name: Delete existing service petshop if it exists
+          command: kubectl delete service petshop
+          when: service_check.rc == 0
+          ignore_errors: yes
 
     - name: Apply Deployment
       command: kubectl apply -f /home/ubuntu/deployment.yaml
