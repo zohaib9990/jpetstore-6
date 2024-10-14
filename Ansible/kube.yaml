@@ -18,11 +18,11 @@
 
     - name: Check deployments
       command: kubectl get deployments -o name
-      register: all_deployments
+      register: deployment_check
       ignore_errors: yes  # Ignore errors if no deployments are found
       failed_when: false
       changed_when: false
-      debug:
+    - debug:
         msg: "Current deployments: {{ all_deployments.stdout_lines }}"
       when: all_deployments.rc == 0  # Only print if the command was successful
 
