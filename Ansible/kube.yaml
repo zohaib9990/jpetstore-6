@@ -28,7 +28,7 @@
 
     - name: Delete existing deployment if it exists
       command: kubectl delete deployment petshop
-      when: deployment_check.rc == 0
+      when: all_deployments.rc == 0
       ignore_errors: yes
 
     - name: K8s Check Service
