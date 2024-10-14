@@ -4,6 +4,11 @@
   gather_facts: yes  # Gather facts about the target host
 
   tasks:
+    - name: Remove deployment.yaml file after applying deployment
+      command: rm -rf /home/ubuntu/deployment.yaml
+      become: yes  # Use sudo if needed for permissions
+      become_user: root
+      
     - name: Copy deployment.yaml to Kubernetes master
       copy:
         src: /var/lib/jenkins/workspace/petstore/deployment.yaml  # Assuming Jenkins workspace variable
