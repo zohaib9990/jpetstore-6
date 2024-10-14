@@ -1,5 +1,5 @@
 ---
-- name: Docker build and push
+- name: Docker build, scan, and push
   hosts: local  # Replace with the hostname or IP address of your target server
   become: yes  # Run tasks with sudo privileges
 
@@ -15,6 +15,13 @@
 
     - name: Tag Docker image
       command: docker tag petstore rizwanshaukat/petstore:latest 
+
+    - name: Scan Docker image with Trivy
+      command: trivy image petstore > trivyimage.txt
+      args:
+        chdir: /var/lib/jenkins/workspace/petstore
+      register: trivy_scan
+      ignore_errors: yes
 
     - name: Log in to Docker Hub
       community.docker.docker_login:
