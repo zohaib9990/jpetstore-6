@@ -37,15 +37,15 @@
       block:
         - name: Get existing Services 
           command: kubectl get service -o name
-          register: service_check
+          register: all_services
           ignore_errors: yes
         - name: Service exists
           debug:
-            msg: "Current services: {{ service_check.stdout }}"
-          when: service_check.rc == 0
+            msg: "Current services: {{ all_services.stdout_lines }}"
+          when: all_services.rc == 0
         - name: Delete existing service 'petshop' if it exists
           command: kubectl delete service petshop
-          when: service_check.rc == 0
+          when: all_services.rc == 0
           ignore_errors: yes
 
     - name: Apply the new deployment.yaml
