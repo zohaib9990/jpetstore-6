@@ -27,6 +27,8 @@
       copy:
         content: "{{ trivy_scan.stdout }}"
         dest: /var/lib/jenkins/workspace/petstore/trivyimage.txt
+        remote_src: yes
+        mode: 'a+'  # Append mode
       when: trivy_scan.stdout is defined
 
     - name: Log in to Docker Hub
