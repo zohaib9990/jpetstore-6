@@ -26,7 +26,7 @@
     - name: Save Trivy scan output to file
       copy:
         content: "{{ trivy_scan.stdout }}"
-        dest: /var/lib/jenkins/workspace/petstore/trivyimage.txt
+        dest: /var/lib/jenkins/workspace/petstore/trivy.txt
         remote_src: yes
         mode: 'a+'  # Append mode
       when: trivy_scan.stdout is defined
