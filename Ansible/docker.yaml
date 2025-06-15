@@ -14,10 +14,10 @@
         chdir: /var/lib/jenkins/workspace/petstore
 
     - name: Tag Docker image
-      command: docker tag petstore rizwanshaukat/petstore:latest 
+      command: docker tag petstore zohaib56/petstore:latest 
 
     - name: Scan Docker image with Trivy
-      command: trivy image rizwanshaukat/petstore:latest
+      command: trivy image zohaib56/petstore:latest
       args:
         chdir: /var/lib/jenkins/workspace/petstore
       register: trivy_scan
@@ -38,14 +38,14 @@
         password: "{{ DOCKER_PASSWORD }}"
 
     - name: Push Docker image
-      command: docker push rizwanshaukat/petstore:latest
+      command: docker push zohaib56/petstore:latest
 
     - name: Remove existing Docker container
       command: docker rm petstore -f || true
       ignore_errors: true
         
     - name: Run Docker container
-      command: docker run -d --name petstore -p 8081:8080 rizwanshaukat/petstore:latest
+      command: docker run -d --name petstore -p 8081:8080 zohaib56/petstore:latest
       register: run_result
       ignore_errors: yes
 
